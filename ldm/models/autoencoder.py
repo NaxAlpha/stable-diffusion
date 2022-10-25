@@ -60,6 +60,9 @@ class VQModel(pl.LightningModule):
         self.scheduler_config = scheduler_config
         self.lr_g_factor = lr_g_factor
 
+    def patch_latent(self, new_size=16):
+        pass
+
     @contextmanager
     def ema_scope(self, context=None):
         if self.use_ema:
@@ -310,6 +313,31 @@ class AutoencoderKL(pl.LightningModule):
         if ckpt_path is not None:
             self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
 
+    def patch(self, sf=4):
+        def conv_extend(conv: torch.nn.Conv2d, sin=1, sout=1):
+            new = torch.nn.Conv2d(
+                conv.in_channels * sin, 
+                conv.out_channels * sout, 
+                conv.kernel_size,
+                conv.stride,
+                conv.padding,
+                conv.dilation,
+                conv.groups,
+                True,
+                conv.padding_mode,
+                conv.weight.device,
+                conv.weight.dtype,
+            )
+            mu, std = conv.weight.mean(), conv.weight.std()
+            new.weight.data = torch.randn_like(new.weight) * std + mu
+            new.bias.data = torch.randn_like(new.bias) * std + mu
+            return new
+
+        self.encoder.conv_out = conv_extend(self.encoder.conv_out, sout=sf)
+        self.quant_conv = conv_extend(self.quant_conv, sf, sf)
+        self.post_quant_conv = conv_extend(self.post_quant_conv, sf, sf)
+        self.decoder.conv_in = conv_extend(self.decoder.conv_in, sin=sf)
+        
     def init_from_ckpt(self, path, ignore_keys=list()):
         sd = torch.load(path, map_location="cpu")["state_dict"]
         keys = list(sd.keys())
@@ -349,6 +377,9 @@ class AutoencoderKL(pl.LightningModule):
         return x
 
     def training_step(self, batch, batch_idx, optimizer_idx):
+        if batch_idx % 10000 == 0 and self.global_rank == 0:
+            print('SAVING...')
+            torch.save(self.state_dict(), '../checkpoints/model.pt')
         inputs = self.get_input(batch, self.image_key)
         reconstructions, posterior = self(inputs)
 

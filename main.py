@@ -533,6 +533,8 @@ if __name__ == "__main__":
 
         # model
         model = instantiate_from_config(config.model)
+        model.load_state_dict(torch.load('../sd-v1-5/ae.pt'), strict=False)
+        model.patch(sf=4)
 
         # trainer and callbacks
         trainer_kwargs = dict()
@@ -556,7 +558,7 @@ if __name__ == "__main__":
                 }
             },
         }
-        default_logger_cfg = default_logger_cfgs["testtube"]
+        default_logger_cfg = default_logger_cfgs["wandb"]
         if "logger" in lightning_config:
             logger_cfg = lightning_config.logger
         else:

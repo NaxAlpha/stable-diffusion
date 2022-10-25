@@ -7,7 +7,7 @@ model:
     lossconfig:
       target: ldm.modules.losses.LPIPSWithDiscriminator
       params:
-        disc_start: 50001
+        disc_start: 5001
         kl_weight: 0.000001
         disc_weight: 0.5
 
@@ -26,15 +26,15 @@ model:
 data:
   target: main.DataModuleFromConfig
   params:
-    batch_size: 12
+    batch_size: 8
     wrap: True
     train:
-      target: ldm.data.imagenet.ImageNetSRTrain
+      target: ldm.data.laion.LaionAestheticsTrain
       params:
         size: 256
         degradation: pil_nearest
     validation:
-      target: ldm.data.imagenet.ImageNetSRValidation
+      target: ldm.data.laion.LaionAestheticsValidation
       params:
         size: 256
         degradation: pil_nearest
@@ -51,3 +51,5 @@ lightning:
   trainer:
     benchmark: True
     accumulate_grad_batches: 2
+    gpus: "0,1,2,3,4,5,6,7"
+    

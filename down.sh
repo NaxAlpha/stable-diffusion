@@ -1,0 +1,14 @@
+img2dataset \
+    --url_list /home/nax/laion-a6p-index/data \
+    --input_format "parquet"\
+    --url_col "URL" \
+    --caption_col "TEXT" \
+    --output_format webdataset \
+    --output_folder /home/nax/laion-a6p \
+    --processes_count 16 \
+    --thread_count 64 \
+    --image_size 512 \
+    --resize_only_if_bigger=True \
+    --resize_mode="keep_ratio" \
+    --skip_reencode=True \
+    --save_additional_columns '["similarity","hash","punsafe","pwatermark","AESTHETIC_SCORE"]'

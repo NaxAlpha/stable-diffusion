@@ -1,0 +1,23 @@
+Global seed set to 23
+/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:446: UserWarning: Checkpoint directory ../checkpoints exists and is not empty.
+  rank_zero_warn(f"Checkpoint directory {dirpath} exists and is not empty.")
+GPU available: True, used: False
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py:1292: UserWarning: GPU available but not used. Set the gpus flag in your trainer `Trainer(gpus=1)` or script `--gpus=1`.
+  rank_zero_warn(
+Restoring states from the checkpoint file at ../sd-v1-5/ae.pt
+/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/core/datamodule.py:423: LightningDeprecationWarning: DataModule.setup has already been called, so it will not be called again. In v1.6 this behavior will change to always call DataModule.setup.
+  rank_zero_deprecation(
+Traceback (most recent call last):
+  File "main.py", line 719, in <module>
+    trainer.fit(model, data)
+  File "/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 553, in fit
+    self._run(model)
+  File "/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/trainer/trainer.py", line 915, in _run
+    self.checkpoint_connector.restore_training_state()
+  File "/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/trainer/connectors/checkpoint_connector.py", line 166, in restore_training_state
+    self.restore_optimizers_and_schedulers()
+  File "/opt/conda/envs/ldm/lib/python3.8/site-packages/pytorch_lightning/trainer/connectors/checkpoint_connector.py", line 229, in restore_optimizers_and_schedulers
+    raise KeyError(
+KeyError: 'Trying to restore training state but checkpoint contains only the model. This is probably due to `ModelCheckpoint.save_weights_only` being set to `True`.'
